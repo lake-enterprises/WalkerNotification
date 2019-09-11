@@ -22,13 +22,13 @@ def main():
         print('No Bluetooth Address Found')         # Check whether address can be found 
         return
     btrssi = BluetoothRSSI(addr=addr)
-    for i in range(0,BIN_SIZE):                     # Populate initial list up to BIN_SIZE
+    for i in range(BIN_SIZE):                     # Populate initial list up to BIN_SIZE
         rssi = btrssi.get_rssi()
         rssiList.append(rssi)
-    while(True):                                    # Performs continual updates at an interval of TIME_DELAY
+    while True:                                    # Performs continual updates at an interval of TIME_DELAY
         rssi = btrssi.get_rssi()                    # Get current RSSI
         rssiList.insert(0,rssi)                     # Add RSSI to list
-        del rssiList[-1]                            # Pop last element off list
+        rssiList.pop()                            # Pop last element off list
         distance = firebase.put('/pi',{'disance':'test'})
         
         #if(getAverage(rssiList) < THRESHOLD):       # Check if average is below THRESHOLD - if yes, turn on output
@@ -37,11 +37,8 @@ def main():
         time.sleep(1)
 
 
-def getAverage(list):                               # Return average of current list of RSSI values
-    sum = 0
-    for i in range (0,len(list)):
-        sum += list[i]
-    average = sum / len(list)
+def getAverage(l):                               # Return average of current list of RSSI values
+    average = sum(l) / len(l)
     return average
 
 def getDistance(rssi, txpower):
@@ -51,7 +48,8 @@ def getDistance(rssi, txpower):
     else:
         return 0.89976 * (ratio**7.7095) + 0.111
 
-main()
+if __name__ == "__main__":
+    main()
 
 
 
