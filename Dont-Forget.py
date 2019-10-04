@@ -32,22 +32,22 @@ def main():
         print('No Bluetooth Address Found')  # Check whether address can be found
         return
     btrssi = BluetoothRSSI(addr=addr)
-    for i in range(0, BIN_SIZE):  # Populate initial list up to BIN_SIZE
-        rssi = btrssi.request_rssi()
-        rssiList.append(rssi)
-    while (True):  # Performs continual updates at an interval of TIME_DELAY
+    rssiList = [btrssi.request_rssi() for _ in range(BIN_SIZE)]
+    
+    while True:  # Performs continual updates at an interval of TIME_DELAY
         rssi = btrssi.request_rssi()  # Get current RSSI
         rssiList.insert(0, rssi)  # Add RSSI to list
-        del rssiList[-1]  # Pop last element off list
-        database.put('/pi', 'data', getAverage(rssiList))
+        rssiList.pop()  # Pop last element off list
+        database.put('/pi', 'data', get_average(rssiList))
 
-        if (getAverage(rssiList) < THRESHOLD):  # Check if average is below THRESHOLD - if yes, turn on output
+        if get_average(rssiList) < THRESHOLD:  # Check if average is below THRESHOLD - if yes, turn on output
             pygame.mixer_music.play(1)
             print('ALARM')
 
         time.sleep(TIME_DELAY)
         
-def getAverage(list):
+def get_average(list):
     return sum(i[0] for i in list) / len(list)
 
-main()
+if __name__ == "__main__":
+    main()
