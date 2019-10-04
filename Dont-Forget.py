@@ -46,8 +46,8 @@ def main():
 
         time.sleep(TIME_DELAY)
         
-def get_average(list):
-    return sum(i[0] for i in list) / len(list)
+def get_average(l):
+    return sum(i[0] for i in l) / len(l)
 
 if __name__ == "__main__":
     main()
